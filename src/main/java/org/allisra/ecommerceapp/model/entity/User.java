@@ -47,6 +47,9 @@ public class User {
                     "one special character, and no whitespace"
     )
     @Column(nullable = false)
+    private boolean emailVerified=false;
+
+    @Column(nullable = false)
     private String password;
 
     @NotBlank(message = "User must have at least one role.")

@@ -2,6 +2,7 @@ package org.allisra.ecommerceapp.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +14,14 @@ import java.util.Date;
 
 @Slf4j
 @Component
+@Getter
 public class JwtUtils {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Value("${jwt.expiration}")
-    private int jwtExpirationMs;
+    private Long jwtExpirationMs;
 
     @Value("${jwt.issuer}")
     private String jwtIssuer;

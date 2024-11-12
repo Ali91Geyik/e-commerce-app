@@ -11,8 +11,11 @@ import org.allisra.ecommerceapp.model.dto.UserDTO;
 import org.allisra.ecommerceapp.model.dto.UserUpdateDTO;
 import org.allisra.ecommerceapp.model.entity.Role;
 import org.allisra.ecommerceapp.model.entity.User;
+import org.allisra.ecommerceapp.model.entity.VerificationToken;
 import org.allisra.ecommerceapp.repository.RoleRepository;
 import org.allisra.ecommerceapp.repository.UserRepository;
+import org.allisra.ecommerceapp.repository.VerificationTokenRepository;
+import org.allisra.ecommerceapp.service.TokenService;
 import org.allisra.ecommerceapp.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
+    private final VerificationTokenRepository tokenRepository;
     @Override
     public UserDTO createuser(UserCreateDTO createDTO) {
         //e-mail check
@@ -117,6 +122,40 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        VerificationToken verificationToken = tokenService.validateToken(
+                token, VerificationToken.TokenType.PASSWORD_RESET);
+        User user = verificationToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        tokenRepository.delete(verificationToken);
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+    VerificationToken verificationToken = tokenService.validateToken(
+            token, VerificationToken.TokenType.EMAIL_VERIFICATION);
+        User user = verificationToken.getUser();
+        user.setEmailVerified(true);
+        userRepository.save(user);
+        tokenRepository.delete(verificationToken);
+    }
+
+    @Override
+    public void requestPasswordReset(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(()->
+                new ResourceNotFoundException("User not found with this email"+email));
+        tokenService.createPasswordResetTokenAndSendEmail(user);
+
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public User findUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
 
 
     @Override
