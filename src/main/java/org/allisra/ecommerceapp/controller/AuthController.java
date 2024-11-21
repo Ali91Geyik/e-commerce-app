@@ -2,7 +2,8 @@ package org.allisra.ecommerceapp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.allisra.ecommerceapp.exception.BadRequestException;
 import org.allisra.ecommerceapp.model.dto.PasswordResetRequestDTO;
 import org.allisra.ecommerceapp.model.dto.SetNewPasswordDTO;
 import org.allisra.ecommerceapp.model.dto.auth.LoginRequest;
@@ -16,14 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -53,34 +54,49 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
-        //Security context update
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
+            log.debug("Login attempt for email: {}", loginRequest.getEmail());
 
-        //JWT Token oluşturma
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        //Kullanıcı Detayı alma
-        CustomUserDetails userDetails= (CustomUserDetails) authentication.getPrincipal();
-        Set<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
+            log.debug("Authentication successful, generating JWT token");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        //Response Oluşturma
-        LoginResponse response = new LoginResponse();
-        response.setToken(jwt);
-        response.setExpiresIn(jwtUtils.getJwtExpirationMs());
-        response.setEmail(userDetails.getUsername());
-        response.setRoles(roles);
+            try {
+                String jwt = jwtUtils.generateJwtToken(authentication);
+                log.debug("JWT token generated successfully");
 
-        return ResponseEntity.ok(response);
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+                Set<String> roles = userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toSet());
 
+                log.debug("User roles: {}", roles);
+
+                LoginResponse response = new LoginResponse();
+                response.setToken(jwt);
+                response.setExpiresIn(jwtUtils.getJwtExpirationMs());
+                response.setEmail(userDetails.getUsername());
+                response.setRoles(roles);
+
+                return ResponseEntity.ok(response);
+            } catch (Exception e) {
+                log.error("Error during JWT token generation: ", e);
+                throw new RuntimeException("Error generating JWT token", e);
+            }
+        } catch (AuthenticationException e) {
+            log.error("Authentication failed: ", e);
+            throw new BadRequestException("Invalid email or password");
+        } catch (Exception e) {
+            log.error("Unexpected error during login: ", e);
+            throw new RuntimeException("Error during login process", e);
+        }
     }
 
 }

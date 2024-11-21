@@ -2,10 +2,7 @@ package org.allisra.ecommerceapp.mapper;
 
 import org.allisra.ecommerceapp.model.dto.RoleDTO;
 import org.allisra.ecommerceapp.model.entity.Role;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -14,16 +11,11 @@ public interface RoleMapper {
 
     RoleDTO entityToDto(Role role);
 
-    Role DtoToEntity(RoleDTO roleDTO);
-
-    List<RoleDTO> entitiesToDtos(List<Role> roles);
-
-    List<Role> DtosToEntities(List<RoleDTO> roleDTOs);
-
     @Mapping(target = "id", ignore = true)
     Role createDtoToEntity(RoleDTO roleDTO);
 
+    List<RoleDTO> entitiesToDtos(List<Role> roles);
+
     @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(RoleDTO roleDTO, @MappingTarget Role role);
-
 }

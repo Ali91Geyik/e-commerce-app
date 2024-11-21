@@ -6,9 +6,9 @@ import org.allisra.ecommerceapp.exception.BadRequestException;
 import org.allisra.ecommerceapp.exception.ResourceNotFoundException;
 import org.allisra.ecommerceapp.mapper.UserMapper;
 import org.allisra.ecommerceapp.model.dto.PasswordUpdateDTO;
-import org.allisra.ecommerceapp.model.dto.UserCreateDTO;
-import org.allisra.ecommerceapp.model.dto.UserDTO;
-import org.allisra.ecommerceapp.model.dto.UserUpdateDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserCreateDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserUpdateDTO;
 import org.allisra.ecommerceapp.model.entity.Role;
 import org.allisra.ecommerceapp.model.entity.User;
 import org.allisra.ecommerceapp.model.entity.VerificationToken;
@@ -17,6 +17,7 @@ import org.allisra.ecommerceapp.repository.UserRepository;
 import org.allisra.ecommerceapp.repository.VerificationTokenRepository;
 import org.allisra.ecommerceapp.service.TokenService;
 import org.allisra.ecommerceapp.service.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    @Lazy
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final VerificationTokenRepository tokenRepository;

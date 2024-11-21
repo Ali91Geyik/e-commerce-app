@@ -1,10 +1,7 @@
 package org.allisra.ecommerceapp.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +36,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+
+    @Column(nullable = false)
+    private boolean emailVerified=false;
+
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 100, message = "password must be between 8-100 characters.")
     @Pattern(
@@ -47,12 +48,9 @@ public class User {
                     "one special character, and no whitespace"
     )
     @Column(nullable = false)
-    private boolean emailVerified=false;
-
-    @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "User must have at least one role.")
+    @NotEmpty(message = "User must have at least one role")
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "USER_ROLES",

@@ -73,19 +73,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAllUncaughtExceptions(
             Exception ex,
             HttpServletRequest request
-    ){
+    ) {
+        log.error("Uncaught error: ", ex); // Stack trace'i görmek için
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occured!")
+                .message(ex.getMessage()) // Gerçek hata mesajını gösterelim
                 .path(request.getRequestURI())
                 .requestId(UUID.randomUUID().toString())
                 .build();
 
-        log.error("Uncaught error: {}", error );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
 

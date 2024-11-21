@@ -16,7 +16,7 @@ public class OAuth2Config {
             ClientRegistrationRepository clientRegistrationRepository){
     return new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorize");
     }
-
+    @Bean
     public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler(){
         SimpleUrlAuthenticationSuccessHandler successHandler= new SimpleUrlAuthenticationSuccessHandler();
         successHandler.setDefaultTargetUrl("/oauth2/success");

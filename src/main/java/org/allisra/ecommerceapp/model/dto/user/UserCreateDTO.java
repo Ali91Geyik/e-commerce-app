@@ -1,4 +1,4 @@
-package org.allisra.ecommerceapp.model.dto;
+package org.allisra.ecommerceapp.model.dto.user;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,9 @@
 package org.allisra.ecommerceapp.service;
 
 import org.allisra.ecommerceapp.model.dto.PasswordUpdateDTO;
-import org.allisra.ecommerceapp.model.dto.UserCreateDTO;
-import org.allisra.ecommerceapp.model.dto.UserDTO;
-import org.allisra.ecommerceapp.model.dto.UserUpdateDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserCreateDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserDTO;
+import org.allisra.ecommerceapp.model.dto.user.UserUpdateDTO;
 import org.allisra.ecommerceapp.model.entity.User;
 
 import java.util.List;
