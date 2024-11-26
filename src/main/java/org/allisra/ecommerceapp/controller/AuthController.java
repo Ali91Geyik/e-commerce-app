@@ -8,11 +8,13 @@ import org.allisra.ecommerceapp.model.dto.PasswordResetRequestDTO;
 import org.allisra.ecommerceapp.model.dto.SetNewPasswordDTO;
 import org.allisra.ecommerceapp.model.dto.auth.LoginRequest;
 import org.allisra.ecommerceapp.model.dto.auth.LoginResponse;
+import org.allisra.ecommerceapp.model.dto.user.UserCreateDTO;
 import org.allisra.ecommerceapp.model.entity.User;
 import org.allisra.ecommerceapp.security.jwt.JwtUtils;
 import org.allisra.ecommerceapp.security.userdetails.CustomUserDetails;
 import org.allisra.ecommerceapp.service.TokenService;
 import org.allisra.ecommerceapp.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +35,14 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserService userService;
     private final TokenService tokenService;
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> register(@Valid @RequestBody UserCreateDTO createDTO) {
+        log.debug("Registration request received for email: {}", createDTO.getEmail());
+        var user = userService.createuser(createDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
 
     @PostMapping("/password-reset-request")
     public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequestDTO requestDTO){

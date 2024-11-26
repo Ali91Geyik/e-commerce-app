@@ -7,6 +7,8 @@ import org.allisra.ecommerceapp.model.dto.product.ProductDTO;
 import org.allisra.ecommerceapp.model.dto.product.ProductUpdateDTO;
 import org.allisra.ecommerceapp.model.entity.Product;
 import org.allisra.ecommerceapp.service.ProductService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -29,29 +32,44 @@ public class ProductController {
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id){
-        ProductDTO productDTO = productService.getProductById(id);
-        return ResponseEntity.ok(productDTO);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String query) {
+        return ResponseEntity.ok(productService.searchProducts(query));
     }
     @GetMapping("/sku/{sku}")
-    public ResponseEntity<ProductDTO> getProductBySku(@PathVariable String sku){
-        ProductDTO productDTO = productService.getProductBySku(sku);
-        return ResponseEntity.ok(productDTO);
+    public ResponseEntity<ProductDTO> getProductBySku(@PathVariable String sku) {
+        return ResponseEntity.ok(productService.getProductBySku(sku));
     }
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts(
+    public ResponseEntity<Map<String, Object>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) Boolean activeOnly,
-            @RequestParam(required = false) String search){
-        List<ProductDTO> productDTOS;
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortDirection
+    ) {
+        List<ProductDTO> products = activeOnly != null && activeOnly
+                ? productService.getActiveProducts()
+                : productService.getAllProducts();
 
-        if (search!=null && !search.trim().isEmpty()){
-            productDTOS = productService.searchProducts(search);
-        } else if (Boolean.TRUE.equals(activeOnly)) {
-            productDTOS = productService.getActiveProducts();
-        } else {
-            productDTOS = productService.getAllProducts();
-        }
-        return ResponseEntity.ok(productDTOS);
+        int totalItems = products.size();
+        int totalPages = (int) Math.ceil(totalItems / (double) size);
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalItems);
+
+        List<ProductDTO> pageContent = products.subList(fromIndex, toIndex);
+
+        Map<String, Object> response = Map.of(
+                "items", pageContent,
+                "currentPage", page,
+                "totalItems", totalItems,
+                "totalPages", totalPages
+        );
+
+        return ResponseEntity.ok(response);
     }
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
