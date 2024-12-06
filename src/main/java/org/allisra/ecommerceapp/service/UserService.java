@@ -17,9 +17,9 @@ public interface UserService {
     UserDTO updateUser(UserUpdateDTO updateDTO);
     void deleteUser(Long id);
     void updatePassword(PasswordUpdateDTO passwordUpdateDTO);
-    void resetPassword(String token, String newPassword);
-    void verifyEmail(String token);
+    void resetPassword(String email, String newPassword);
+    boolean existByEmail(String email);
+    void verifyEmail(String email);
     void requestPasswordReset(String email);
     User findUserEntityByEmail(String email);
-    boolean existByEmail(String email);
 }

@@ -11,23 +11,27 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ProductCreateDTO {
     @NotBlank(message = "Name is required")
-    @Size(min = 3, max = 100, message = "Name must be between 3-100 characters.")
+    @Size(min = 3, max = 100, message = "Name must be between 3-100 characters")
     private String name;
 
-    @Size(max = 2000, message = "description can not exceed 2000 characters.")
+    @NotBlank(message = "Brand is required")
+    @Size(max = 50, message = "Brand name cannot exceed 50 characters")
+    private String brand;
+
+    @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
 
-    @NotNull(message = "price value is required.")
-    @DecimalMin(value = "0.0", inclusive = false, message = "price can not be negative")
-    @Digits(integer = 10, fraction = 2, message = "invalid price format")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
+    @Digits(integer = 10, fraction = 2, message = "Invalid price format")
     private BigDecimal price;
 
-    @NotNull(message = "Stock Quantity number is required")
-    @Min(value = 0, message = "Stock quantity can not be negative")
+    @NotNull(message = "Stock quantity is required")
+    @Min(value = 0, message = "Stock quantity cannot be negative")
     private Integer stockQuantity;
 
     @NotNull(message = "Category ID is required")
-    private Long categoryId;  // Kategori ID'sini ekledik
+    private Long categoryId;
 
     private String sku;
     private String imageUrl;

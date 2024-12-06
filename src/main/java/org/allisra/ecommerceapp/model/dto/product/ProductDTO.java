@@ -1,8 +1,10 @@
 package org.allisra.ecommerceapp.model.dto.product;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -36,6 +38,12 @@ public class ProductDTO {
     // Category ilişkisi için
     private Long categoryId; // Kategori ID'sini ekledik
     private String categoryName; // İsteğe bağlı olarak kategori adını da ekleyebiliriz
+
+    // Yeni alanlar
+    private String brand;
+    private BigDecimal averageRating;
+    private Integer reviewCount;
+    private Integer viewCount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

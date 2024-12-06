@@ -147,6 +147,7 @@ public class DataInitializer {
                     new BigDecimal("999.99"),
                     50,
                     "PHONE-001",
+                    "casper Brand",
                     electronicsCategory.getId()
             );
             createProduct(
@@ -155,6 +156,7 @@ public class DataInitializer {
                     new BigDecimal("1499.99"),
                     30,
                     "LAPTOP-001",
+                    "samsung Brand",
                     electronicsCategory.getId()
             );
             createProduct(
@@ -163,6 +165,7 @@ public class DataInitializer {
                     new BigDecimal("199.99"),
                     100,
                     "EARBUD-001",
+                    "apple Brand",
                     electronicsCategory.getId()
             );
         } else {
@@ -176,6 +179,7 @@ public class DataInitializer {
             BigDecimal price,
             Integer stock,
             String sku,
+            String brand,
             Long categoryId
     ) {
         try {
@@ -185,6 +189,7 @@ public class DataInitializer {
             dto.setPrice(price);
             dto.setStockQuantity(stock);
             dto.setSku(sku);
+            dto.setBrand(brand);
             dto.setCategoryId(categoryId);  // Category ID'sini set ediyoruz
 
             productService.createProduct(dto);

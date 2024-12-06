@@ -5,7 +5,6 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -28,6 +27,24 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @NotBlank(message = "Brand is required")
+    @Size(max = 50, message = "Brand name cannot exceed 50 characters")
+    @Column(nullable = false)
+    private String brand = "Default Brand";
+
+    @DecimalMin(value = "0.0", message = "Average rating cannot be negative")
+    @DecimalMax(value = "5.0", message = "Average rating cannot exceed 5.0")
+    @Column(name = "average_rating", precision = 3, scale = 2)
+    private BigDecimal averageRating = BigDecimal.ZERO;
+
+    @Min(value = 0, message = "Review count cannot be negative")
+    @Column(name = "review_count")
+    private Integer reviewCount = 0;
+
+    @Min(value = 0, message = "View count cannot be negative")
+    @Column(name = "view_count")
+    private Integer viewCount = 0;
 
     @Size(max = 2000, message = "Description must be under 2000 characters")
     @Column(length = 2000)

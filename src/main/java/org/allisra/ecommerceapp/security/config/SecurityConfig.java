@@ -37,19 +37,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**",
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/auth/verify-email/**", // Email doğrulama endpoint'i açıkça belirtildi
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api-docs/**")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
+                                "/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

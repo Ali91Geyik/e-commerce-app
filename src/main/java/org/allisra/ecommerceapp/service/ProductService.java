@@ -1,10 +1,10 @@
 package org.allisra.ecommerceapp.service;
 
-import org.allisra.ecommerceapp.model.dto.product.ProductCreateDTO;
-import org.allisra.ecommerceapp.model.dto.product.ProductDTO;
-import org.allisra.ecommerceapp.model.dto.product.ProductUpdateDTO;
+import org.allisra.ecommerceapp.model.dto.product.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProductService {
 
@@ -18,6 +18,17 @@ public interface ProductService {
     void deleteProduct(Long id);
     void updateStock(Long id, int quantity);
 
+    // Yeni metodlar
+    Page<ProductDTO> getProductsWithFilters(ProductFilterDTO filterDTO);
+    List<String> getAllBrands();
+    Map<String, ProductStatsDTO> getBrandStatistics();
+    List<ProductDTO> getMostViewedProducts(int limit);
+    List<ProductDTO> getTopRatedProducts(int limit);
+    List<ProductDTO> getMostReviewedProducts(int limit);
+    void incrementViewCount(Long productId);
+    Map<String, Object> getProductDetails(Long productId);
+    List<ProductDTO> getRelatedProducts(Long productId, int limit);
+    Map<String, Double> getPriceRangeByCategory(Long categoryId);
 
 
 }

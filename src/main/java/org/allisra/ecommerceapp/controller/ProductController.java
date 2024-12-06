@@ -2,11 +2,10 @@ package org.allisra.ecommerceapp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.allisra.ecommerceapp.model.dto.product.ProductCreateDTO;
-import org.allisra.ecommerceapp.model.dto.product.ProductDTO;
-import org.allisra.ecommerceapp.model.dto.product.ProductUpdateDTO;
+import org.allisra.ecommerceapp.model.dto.product.*;
 import org.allisra.ecommerceapp.model.entity.Product;
 import org.allisra.ecommerceapp.service.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -70,6 +69,86 @@ public class ProductController {
         );
 
         return ResponseEntity.ok(response);
+    }
+    // Yeni endpoint'ler
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductDTO>> getProductsWithFilters(
+            @ModelAttribute ProductFilterDTO filterDTO) {
+        return ResponseEntity.ok(productService.getProductsWithFilters(filterDTO));
+    }
+
+    @GetMapping("/brands")
+    public ResponseEntity<List<String>> getAllBrands() {
+        return ResponseEntity.ok(productService.getAllBrands());
+    }
+
+    @GetMapping("/brands/stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, ProductStatsDTO>> getBrandStatistics() {
+        return ResponseEntity.ok(productService.getBrandStatistics());
+    }
+
+    @GetMapping("/most-viewed")
+    public ResponseEntity<List<ProductDTO>> getMostViewedProducts(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(productService.getMostViewedProducts(limit));
+    }
+
+    @GetMapping("/top-rated")
+    public ResponseEntity<List<ProductDTO>> getTopRatedProducts(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(productService.getTopRatedProducts(limit));
+    }
+
+    @GetMapping("/most-reviewed")
+    public ResponseEntity<List<ProductDTO>> getMostReviewedProducts(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(productService.getMostReviewedProducts(limit));
+    }
+
+    @GetMapping("/{id}/related")
+    public ResponseEntity<List<ProductDTO>> getRelatedProducts(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(productService.getRelatedProducts(id, limit));
+    }
+
+    @GetMapping("/category/{categoryId}/price-range")
+    public ResponseEntity<Map<String, Double>> getPriceRangeByCategory(
+            @PathVariable Long categoryId) {
+        return ResponseEntity.ok(productService.getPriceRangeByCategory(categoryId));
+    }
+
+    // Admin-specific endpoints
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductDTO> updateProductStatus(
+            @PathVariable Long id,
+            @RequestParam boolean active) {
+        ProductUpdateDTO updateDTO = ProductUpdateDTO.builder()
+                .id(id)
+                .active(active)
+                .build();
+        return ResponseEntity.ok(productService.updateProduct(updateDTO));
+    }
+
+    @GetMapping("/admin/dashboard")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getAdminDashboardStats() {
+        Map<String, Object> stats = Map.of(
+                "brands", productService.getAllBrands(),
+                "brandStats", productService.getBrandStatistics(),
+                "topRated", productService.getTopRatedProducts(5),
+                "mostViewed", productService.getMostViewedProducts(5),
+                "mostReviewed", productService.getMostReviewedProducts(5)
+        );
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/search/advanced")
+    public ResponseEntity<Page<ProductDTO>> advancedSearch(
+            @ModelAttribute ProductFilterDTO filterDTO) {
+        return ResponseEntity.ok(productService.getProductsWithFilters(filterDTO));
     }
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

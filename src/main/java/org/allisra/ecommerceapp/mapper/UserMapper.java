@@ -13,17 +13,20 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
-    @Mapping(target = "roleNames", source = "roles", qualifiedByName = "rolesToRoleNames")
+    @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToRoleNames")
+    @Mapping(target = "emailVerified", source = "emailVerified")
     UserDTO entityToDto(User user);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "emailVerified", constant = "false")
     User createDtoToEntity(UserCreateDTO createDTO);
 
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "emailVerified", ignore = true)
     void updateEntityFromDto(UserUpdateDTO updateDTO, @MappingTarget User user);
 
     @Named("rolesToRoleNames")
@@ -36,9 +39,4 @@ public interface UserMapper {
 
     @IterableMapping(elementTargetType = UserDTO.class)
     Set<UserDTO> entitiesToDtos(Set<User> users);
-
-    @AfterMapping
-    default void afterCreateDtoToEntity(@MappingTarget User user) {
-        user.setActive(true);
-    }
 }

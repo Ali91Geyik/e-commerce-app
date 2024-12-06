@@ -32,7 +32,7 @@ public class UserDTO {
     @Email(message = "Please provide a valid email address")
     private String email;
 
-    private Set<String> roleNames;
+    private Set<String> roles;
 
     private boolean active;
     private boolean emailVerified;
